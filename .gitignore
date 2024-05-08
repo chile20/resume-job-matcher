@@ -1,0 +1,6 @@
+# Project exclude paths
+/venv/
+*.idea
+.env
+.DS_store
+__pycache__/

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume Refiner</title>
+    <!-- Include Tailwind CSS from CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+<div class="mx-auto max-w-screen-xl px-4 py-24 sm:px-6 lg:px-8">
+    <div class="mx-auto max-w-5xl"> <!-- Further increased max-width of the container -->
+        <h1 class="text-center text-2xl font-bold text-indigo-600 sm:text-3xl">Resume-Job Matcher</h1>
+
+        <p class="mx-auto mt-4 max-w-xl text-center text-gray-500"> <!-- Increased max-width of the paragraph -->
+            Tailor your resume to the job you're applying for by highlighting skills and experiences that are most
+            relevant to the position.
+        </p>
+
+        <div class="bg-white mb-0 mt-6 space-y-6 rounded-lg p-6 shadow-lg sm:p-8 lg:p-10">
+            <p>To better match the qualifications outlined in the job description, consider the following improvements to your resume:</p>
+            <ul>
+                {% for point in refined %}
+                    <li>{{ point | safe }}</li>
+                {% endfor %}
+            </ul>
+            <a href="/"
+               class="text-center block w-full rounded-lg bg-indigo-600 px-5 py-3 text-sm font-medium text-white">
+                Refine Another Resume
+            </a>
+
+        </div>
+    </div>
+</div>
+</body>
+</html>
