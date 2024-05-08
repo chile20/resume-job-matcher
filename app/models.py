@@ -35,7 +35,7 @@ def refine_resume(resume, job_description):
                      "content": f"You are a detail-oriented assistant tasked with providing specific improvements to enhance a resume. "
                                 f"Review the provided resume and, focusing on the key qualifications and important skill sets listed from "
                                 f"the job description: {keywords}, suggest targeted changes that address these aspects. "
-                                f"Present your suggestions as a numbered list. Ensure each suggestion aims to align "
+                                f"Present your suggestions as a numbered list of 6 items at most. Ensure each suggestion aims to align "
                                 f"the resume more closely with these particular job requirements and enhances the portrayal of relevant "
                                 f"skills. Here’s the resume: {resume}."}
                 ]
@@ -49,13 +49,15 @@ def refine_resume(resume, job_description):
     else:
         return "No keywords extracted. Check the job description."
 
+
 def extract_keywords(job_description):
     try:
         response = client.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=[
                 {"role": "system", "content": "You are an applicant tracking system."},
-                {"role": "user", "content": f"Using the job description I provide, extract the most important keywords and terms. For each keyword or term, provide your logic for why you chose them. The job description is: {job_description}"}
+                {"role": "user",
+                 "content": f"Using the job description I provide, extract the most important keywords and terms. For each keyword or term, provide your logic for why you chose them. The job description is: {job_description}"}
             ]
         )
         print("\nResult of keywords is: \n")
