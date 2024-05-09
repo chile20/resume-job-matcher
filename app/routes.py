@@ -1,7 +1,7 @@
 from flask import Flask, Blueprint, render_template, request, redirect, url_for, session, jsonify
 from .models import refine_resume
 import os
-import docx2txt
+# import docx2txt
 import pdfplumber
 
 from dotenv import load_dotenv
@@ -43,8 +43,8 @@ def extract_text_from_file(file, fallback_texts):
         filename = file.filename.lower()
         if filename.endswith('.txt'):
             text_content = file.read().decode('utf-8')
-        elif filename.endswith('.docx'):
-            text_content = docx2txt.process(file)
+        # elif filename.endswith('.docx'):
+        #     text_content = docx2txt.process(file)
         elif filename.endswith('.pdf'):
             with pdfplumber.open(file) as pdf:
                 text_content = '\n'.join(page.extract_text() for page in pdf.pages if page.extract_text())
