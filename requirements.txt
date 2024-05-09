@@ -2,8 +2,6 @@ Flask==2.0.3
 werkzeug==2.0.3
 flask-wtf==1.0.0
 wtforms==3.0.1
-transformers==4.40.1
-torch~=2.2.2
 openai~=1.24.0
 python-dotenv~=1.0.1
 pdfplumber~=0.11.0

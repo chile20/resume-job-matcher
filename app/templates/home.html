@@ -25,8 +25,8 @@
             <form id="form" action="/refine" method="post" enctype="multipart/form-data" class="">
                 <!-- Increased padding and spacing -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6"> <!-- Increased grid gap -->
-                    <!-- Resume Textarea -->
                     <div>
+                        <!-- Resume Textarea -->
                         <label for="resume_text" class="sr-only">Resume</label>
                         <textarea id="resume" name="resume_text" rows="20"
                                   class="w-full rounded-lg border-gray-200 border p-4 text-sm shadow-sm"
@@ -42,8 +42,8 @@
                                    onchange="fileInputChangedResume(event)"/>
                         </div>
                     </div>
-                    <!-- Job Description Textarea -->
                     <div>
+                        <!-- Job Description Textarea -->
                         <label for="job_description_text" class="sr-only">Job Description</label>
                         <textarea id="job_description" name="job_description_text" rows="20"
                                   class="w-full rounded-lg border-gray-200 border p-4 text-sm shadow-sm"
@@ -67,10 +67,8 @@
                     Refine resume
                 </button>
             </form>
-            <div id="result_container" class="hidden">
-                <p>To better match the qualifications outlined in the job description, consider the following
-                    improvements
-                    to your resume:</p>
+            <div id="result_container" class="hidden mt-0 pt-0">
+                <p class="font-semibold text-lg">Consider the following improvements to your resume:</p>
                 <ul id="suggestions">
                 </ul>
                 <a href="/"
@@ -174,7 +172,7 @@
         refined.forEach(point => {
             const listItem = document.createElement('li');
             listItem.innerHTML = point;
-            listItem.className = 'pb-2';
+            listItem.className = 'pb-4';
             suggestionsList.appendChild(listItem);
         });
 
