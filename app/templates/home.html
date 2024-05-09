@@ -6,8 +6,13 @@
     <title>Resume Refiner</title>
     <!-- Include Tailwind CSS from CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" integrity="sha512-PgQMlq+nqFLV4ylk1gwUOgm6CtIIXkKwaIHp/PAIWHzig/lKZSEGKEysh0TCVbHJXCLN7WetD8TFecIky75ZfQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 <body class="bg-slate-50">
+<div id="spinner" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-white bg-opacity-75">
+    <div class="fas fa-circle-notch fa-spin fa-5x text-indigo-600"></div>
+</div>
+</div>
 <div class="mx-auto max-w-screen-xl px-4 py-24 sm:px-6 lg:px-8">
     <div class="mx-auto max-w-5xl"> <!-- Further increased max-width of the container -->
         <h1 class="text-center text-2xl font-bold text-indigo-600 sm:text-3xl">Resume-Job Matcher</h1>
@@ -17,7 +22,7 @@
             relevant to the position.
         </p>
         <div id="container" class="bg-white mb-0 mt-6 space-y-6 rounded-lg p-6 shadow-lg sm:p-8 lg:p-10">
-            <form id="form" action="/refine" method="post" enctype="multipart/form-data" style="display:block;">
+            <form id="form" action="/refine" method="post" enctype="multipart/form-data" class="">
                 <!-- Increased padding and spacing -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6"> <!-- Increased grid gap -->
                     <!-- Resume Textarea -->
@@ -48,7 +53,8 @@
                              class="flex flex-col items-center justify-center p-4 border-2 border-gray-300 border-dashed rounded-lg my-4 hover:border-gray-400"
                              ondragover="event.preventDefault()"
                              ondrop="handleDropJobDescription(event)">
-                            <p class="text-sm font-medium text-gray-700">Drag and drop the job description here or click to
+                            <p class="text-sm font-medium text-gray-700">Drag and drop the job description here or click
+                                to
                                 upload</p>
                             <input id="job_description_file" name="job_description_file" type="file" class="hidden"
                                    onchange="fileInputChangedJobDescription(event)"/>
@@ -61,7 +67,7 @@
                     Refine resume
                 </button>
             </form>
-            <div id="result_container" style="display:none;">
+            <div id="result_container" class="hidden">
                 <p>To better match the qualifications outlined in the job description, consider the following
                     improvements
                     to your resume:</p>
@@ -129,6 +135,11 @@
     }
 
     function sendForm() {
+        const spinner = document.getElementById('spinner');
+
+        // Show spinner
+        spinner.classList.remove('hidden');
+
         const formData = new FormData();
         formData.append('resume_text', resumeTextArea.value);
         formData.append('job_description_text', jobDescriptionTextArea.value);
@@ -150,15 +161,12 @@
             })
             .catch((error) => {
                 console.error('Error:', error);
+            })
+            .finally(() => {
+                // Hide spinner
+                spinner.classList.add('hidden');
             });
-        e
     }
-
-    // Don't forget to add event listeners for the dragover and drop events
-    dropAreaResume.addEventListener('dragover', event => event.preventDefault());
-    dropAreaResume.addEventListener('drop', handleDropResume);
-    dropAreaJobDescription.addEventListener('dragover', event => event.preventDefault());
-    dropAreaJobDescription.addEventListener('drop', handleDropJobDescription);
 
     function updateSuggestions(refined) {
         const suggestionsList = document.getElementById('suggestions');
@@ -171,8 +179,8 @@
         });
 
         // Show the result container if it's initially hidden
-        document.getElementById('result_container').style.display = 'block';
-        document.getElementById('form').style.display = 'none';
+        document.getElementById('result_container').classList.remove('hidden');
+        document.getElementById('form').classList.add('hidden');
     }
 </script>
 </body>
