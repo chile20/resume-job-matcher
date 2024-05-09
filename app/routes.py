@@ -1,3 +1,4 @@
+import pdfplumber
 from flask import Blueprint, render_template, request, jsonify
 from .models import refine_resume
 import os
@@ -12,40 +13,27 @@ def home():
 
 @main.route('/refine', methods=['POST'])
 def refine():
-    file = request.files.get('resume_file')
-    if file and file.filename != '':
-        filename = file.filename
-        if filename.endswith('.txt'):
-            resume_text = file.read().decode('utf-8')
-        elif filename.endswith('.docx'):
-            resume_text = docx2txt.process(file)
-        elif filename.endswith('.pdf'):
-            from pdfplumber import open as open_pdf
-            with open_pdf(file) as pdf:
-                resume_text = '\n'.join(page.extract_text() for page in pdf.pages if page.extract_text())
-        else:
-            return "Unsupported file type", 400
-    else:
-        resume_text = request.form['resume_text']
-    job_description_text = request.form['job_description_text']
+    resume_text = extract_text_from_file(request.files.get('resume_file'), request.form['resume_text'])
+    job_description_text = extract_text_from_file(request.files.get('job_description_file'), request.form['job_description_text'])
     print(resume_text)
     print(job_description_text)
     refined_text = refine_resume(resume_text, job_description_text)
     return jsonify(original=resume_text, refined=refined_text)
     # return render_template('result.html', original=resume_text, refined=refined_text)
 
-def extract_text_from_file(file, fallback_text):
+
+def extract_text_from_file(file, fallback_texts):
     if file and file.filename != '':
-        filename = file.filename.lower()  # Use lower case to handle file extensions reliably
+        filename = file.filename.lower()
         if filename.endswith('.txt'):
-            text = file.read().decode('utf-8')
+            text_content = file.read().decode('utf-8')
         elif filename.endswith('.docx'):
-            text = docx2txt.process(file)
+            text_content = docx2txt.process(file)
         elif filename.endswith('.pdf'):
-            with open_pdf(file) as pdf:
-                text = '\n'.join(page.extract_text() for page in pdf.pages if page.extract_text())
+            with pdfplumber.open(file) as pdf:
+                text_content = '\n'.join(page.extract_text() for page in pdf.pages if page.extract_text())
         else:
-            raise ValueError("Unsupported file type")
-        return text
+            return "Unsupported file type", 400
+        return text_content
     else:
-        return fallback_text
+        return fallback_texts

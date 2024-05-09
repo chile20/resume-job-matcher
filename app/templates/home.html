@@ -17,90 +17,126 @@
             relevant to the position.
         </p>
         <div id="container" class="bg-white mb-0 mt-6 space-y-6 rounded-lg p-6 shadow-lg sm:p-8 lg:p-10">
-        <form id="form" action="/refine" method="post" enctype="multipart/form-data" style="display:block;">
-            <!-- Increased padding and spacing -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6"> <!-- Increased grid gap -->
-                <!-- Resume Textarea -->
-                <div>
-                    <label for="resume_text" class="sr-only">Resume</label>
-                    <textarea id="resume" name="resume_text" rows="20"
-                              class="w-full rounded-lg border-gray-200 border p-4 text-sm shadow-sm"
-                              placeholder="Paste your resume here"></textarea>
-                    <!-- Drag and Drop File Upload for Resume -->
-                    <div id="drop_area"
-                         class="flex flex-col items-center justify-center p-4 border-2 border-gray-300 border-dashed rounded-lg my-4 hover:border-gray-400"
-                         ondragover="event.preventDefault()"
-                         ondrop="handleDrop(event)">
-                        <p class="text-sm font-medium text-gray-700">Drag and drop your resume here or click to upload</p>
-                        <input id="resume_file" name="resume_file" type="file" class="hidden"
-                               onchange="fileInputChanged(event)"/>
+            <form id="form" action="/refine" method="post" enctype="multipart/form-data" style="display:block;">
+                <!-- Increased padding and spacing -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6"> <!-- Increased grid gap -->
+                    <!-- Resume Textarea -->
+                    <div>
+                        <label for="resume_text" class="sr-only">Resume</label>
+                        <textarea id="resume" name="resume_text" rows="20"
+                                  class="w-full rounded-lg border-gray-200 border p-4 text-sm shadow-sm"
+                                  placeholder="Paste your resume here"></textarea>
+                        <!-- Drag and Drop File Upload for Resume -->
+                        <div id="drop_area_resume"
+                             class="flex flex-col items-center justify-center p-4 border-2 border-gray-300 border-dashed rounded-lg my-4 hover:border-gray-400"
+                             ondragover="event.preventDefault()"
+                             ondrop="handleDropResume(event)">
+                            <p class="text-sm font-medium text-gray-700">Drag and drop your resume here or click to
+                                upload</p>
+                            <input id="resume_file" name="resume_file" type="file" class="hidden"
+                                   onchange="fileInputChangedResume(event)"/>
+                        </div>
+                    </div>
+                    <!-- Job Description Textarea -->
+                    <div>
+                        <label for="job_description_text" class="sr-only">Job Description</label>
+                        <textarea id="job_description" name="job_description_text" rows="20"
+                                  class="w-full rounded-lg border-gray-200 border p-4 text-sm shadow-sm"
+                                  placeholder="Paste job description here"></textarea>
+                        <!-- Drag and Drop File Upload for Job Description -->
+                        <div id="drop_area_job_description"
+                             class="flex flex-col items-center justify-center p-4 border-2 border-gray-300 border-dashed rounded-lg my-4 hover:border-gray-400"
+                             ondragover="event.preventDefault()"
+                             ondrop="handleDropJobDescription(event)">
+                            <p class="text-sm font-medium text-gray-700">Drag and drop the job description here or click to
+                                upload</p>
+                            <input id="job_description_file" name="job_description_file" type="file" class="hidden"
+                                   onchange="fileInputChangedJobDescription(event)"/>
+                        </div>
                     </div>
                 </div>
-                <!-- Job Description Textarea -->
-                <div>
-                    <label for="job_description_text" class="sr-only">Job Description</label>
-                    <textarea id="job_description" name="job_description_text" rows="20"
-                              class="w-full rounded-lg border-gray-200 border p-4 text-sm shadow-sm"
-                              placeholder="Paste job description here"></textarea>
-                </div>
-            </div>
 
-            <button type="submit"
-                    class="block w-full rounded-lg bg-indigo-600 px-5 py-3 text-sm font-medium text-white">
-                Refine resume
-            </button>
-        </form>
-        <div id="result_container" style="display:none;">
-            <p>To better match the qualifications outlined in the job description, consider the following improvements
-                to your resume:</p>
-            <ul id="suggestions">
-            </ul>
-            <a href="/"
-               class="text-center block w-full rounded-lg bg-indigo-600 px-5 py-3 text-sm font-medium text-white">
-                Refine Another Resume
-            </a>
-        </div>
+                <button type="submit"
+                        class="block w-full rounded-lg bg-indigo-600 px-5 py-3 text-sm font-medium text-white">
+                    Refine resume
+                </button>
+            </form>
+            <div id="result_container" style="display:none;">
+                <p>To better match the qualifications outlined in the job description, consider the following
+                    improvements
+                    to your resume:</p>
+                <ul id="suggestions">
+                </ul>
+                <a href="/"
+                   class="text-center block w-full rounded-lg bg-indigo-600 px-5 py-3 text-sm font-medium text-white">
+                    Refine Another Resume
+                </a>
+            </div>
         </div>
     </div>
 </div>
 <script>
     const form = document.querySelector('form');
-    const dropArea = document.getElementById('drop_area');
-    const fileInput = document.getElementById('resume_file');
+    const dropAreaResume = document.getElementById('drop_area_resume');
+    const fileInputResume = document.getElementById('resume_file');
+    const dropAreaJobDescription = document.getElementById('drop_area_job_description');
+    const fileInputJobDescription = document.getElementById('job_description_file');
     const resumeTextArea = document.getElementById('resume');
     const jobDescriptionTextArea = document.getElementById('job_description');
 
-    dropArea.addEventListener('click', () => fileInput.click());
+    dropAreaResume.addEventListener('click', () => fileInputResume.click());
+    dropAreaJobDescription.addEventListener('click', () => fileInputJobDescription.click());
 
     form.addEventListener('submit', function (event) {
         event.preventDefault();
         sendForm();
     });
 
-    function handleDrop(event) {
+    function handleDropResume(event) {
         event.preventDefault();
         if (event.dataTransfer.files.length) {
-            fileInput.files = event.dataTransfer.files;
-            updateLabel();
+            fileInputResume.files = event.dataTransfer.files;
+            updateLabelResume();
         }
     }
 
-    function fileInputChanged() {
-        if (fileInput.files.length) {
-            updateLabel();
+    function handleDropJobDescription(event) {
+        event.preventDefault();
+        if (event.dataTransfer.files.length) {
+            fileInputJobDescription.files = event.dataTransfer.files;
+            updateLabelJobDescription();
         }
     }
 
-    function updateLabel() {
-        dropArea.innerHTML = `<p class="text-sm font-medium text-gray-700">File: ${fileInput.files[0].name}</p>`;
+    function fileInputChangedResume() {
+        if (fileInputResume.files.length) {
+            updateLabelResume();
+        }
+    }
+
+    function fileInputChangedJobDescription() {
+        if (fileInputJobDescription.files.length) {
+            updateLabelJobDescription();
+        }
+    }
+
+    function updateLabelResume() {
+        dropAreaResume.innerHTML = `<p class="text-sm font-medium text-gray-700">Resume File: ${fileInputResume.files[0].name}</p>`;
+    }
+
+    function updateLabelJobDescription() {
+        dropAreaJobDescription.innerHTML = `<p class="text-sm font-medium text-gray-700">Job Description File: ${fileInputJobDescription.files[0].name}</p>`;
     }
 
     function sendForm() {
         const formData = new FormData();
         formData.append('resume_text', resumeTextArea.value);
         formData.append('job_description_text', jobDescriptionTextArea.value);
-        if (fileInput.files.length > 0) {
-            formData.append('resume_file', fileInput.files[0]);
+        if (fileInputResume.files.length > 0) {
+            formData.append('resume_file', fileInputResume.files[0]);
+        }
+        if (fileInputJobDescription.files.length > 0) {
+            formData.append('job_description_file', fileInputJobDescription.files[0]);
         }
 
         fetch('/refine', {
@@ -115,7 +151,14 @@
             .catch((error) => {
                 console.error('Error:', error);
             });
+        e
     }
+
+    // Don't forget to add event listeners for the dragover and drop events
+    dropAreaResume.addEventListener('dragover', event => event.preventDefault());
+    dropAreaResume.addEventListener('drop', handleDropResume);
+    dropAreaJobDescription.addEventListener('dragover', event => event.preventDefault());
+    dropAreaJobDescription.addEventListener('drop', handleDropJobDescription);
 
     function updateSuggestions(refined) {
         const suggestionsList = document.getElementById('suggestions');
