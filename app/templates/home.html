@@ -48,8 +48,7 @@
                              class="flex flex-col items-center justify-center p-4 border-2 border-gray-300 border-dashed rounded-lg my-4 hover:border-gray-400"
                              ondragover="event.preventDefault()"
                              ondrop="handleDropResume(event)">
-                            <p class="text-sm font-medium text-gray-700">Drag and drop your resume here or click to
-                                upload</p>
+                            <p class="text-sm font-medium text-gray-700">Drop or click to upload your resume (.txt, .docx, .pdf)</p>
                             <input id="resume_file" name="resume_file" type="file" class="hidden"
                                    onchange="fileInputChangedResume(event)"/>
                         </div>
@@ -69,9 +68,7 @@
                              class="flex flex-col items-center justify-center p-4 border-2 border-gray-300 border-dashed rounded-lg my-4 hover:border-gray-400"
                              ondragover="event.preventDefault()"
                              ondrop="handleDropJobDescription(event)">
-                            <p class="text-sm font-medium text-gray-700">Drag and drop the job description here or click
-                                to
-                                upload</p>
+                            <p class="text-sm font-medium text-gray-700">Drop or click to upload the job description (.txt, .docx, .pdf)</p>
                             <input id="job_description_file" name="job_description_file" type="file" class="hidden"
                                    onchange="fileInputChangedJobDescription(event)"/>
                         </div>
