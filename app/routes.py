@@ -1,7 +1,6 @@
 from flask import Flask, Blueprint, render_template, request, redirect, url_for, session, jsonify
 from .models import refine_resume
 import os
-# import docx2txt
 import pdfplumber
 
 from dotenv import load_dotenv
@@ -36,7 +35,7 @@ def refine():
     # Check if either the resume text or job description text is empty
     if not resume_text.strip() or not job_description_text.strip():
         return jsonify(error="Both resume and job description must be provided."), 400
-    
+
     refined_text = refine_resume(resume_text, job_description_text)
     return jsonify(original=resume_text, refined=refined_text)
     # return render_template('result.html', original=resume_text, refined=refined_text)
