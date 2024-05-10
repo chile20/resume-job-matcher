@@ -1,7 +1,7 @@
 from flask import Flask, Blueprint, render_template, request, redirect, url_for, session, jsonify
 from .models import refine_resume
 import os
-import textract
+# import docx2txt
 import pdfplumber
 
 from dotenv import load_dotenv
@@ -33,19 +33,24 @@ def refine():
     job_description_text = extract_text_from_file(request.files.get('job_description_file'), request.form['job_description_text'])
     print(resume_text)
     print(job_description_text)
+    # Check if either the resume text or job description text is empty
+    if not resume_text.strip() or not job_description_text.strip():
+        return jsonify(error="Both resume and job description must be provided."), 400
+    
     refined_text = refine_resume(resume_text, job_description_text)
     return jsonify(original=resume_text, refined=refined_text)
     # return render_template('result.html', original=resume_text, refined=refined_text)
-
 
 def extract_text_from_file(file, fallback_texts):
     if file and file.filename != '':
         filename = file.filename.lower()
         if filename.endswith('.txt'):
             text_content = file.read().decode('utf-8')
-        elif filename.endswith('.docx') or filename.endswith('.pdf'):
-            # textract processes both .docx and .pdf files
-            text_content = textract.process(file).decode('utf-8')
+        # elif filename.endswith('.docx'):
+        #     text_content = docx2txt.process(file)
+        elif filename.endswith('.pdf'):
+            with pdfplumber.open(file) as pdf:
+                text_content = '\n'.join(page.extract_text() for page in pdf.pages if page.extract_text())
         else:
             return "Unsupported file type", 400
         return text_content

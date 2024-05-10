@@ -6,31 +6,43 @@
     <title>Resume Refiner</title>
     <!-- Include Tailwind CSS from CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" integrity="sha512-PgQMlq+nqFLV4ylk1gwUOgm6CtIIXkKwaIHp/PAIWHzig/lKZSEGKEysh0TCVbHJXCLN7WetD8TFecIky75ZfQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css"
+          integrity="sha512-PgQMlq+nqFLV4ylk1gwUOgm6CtIIXkKwaIHp/PAIWHzig/lKZSEGKEysh0TCVbHJXCLN7WetD8TFecIky75ZfQ=="
+          crossorigin="anonymous" referrerpolicy="no-referrer"/>
+    <!-- Other head content -->
+    <style>
+        textarea:not(:placeholder-shown) + label,
+        textarea:focus + label {
+            transform: translateY(-120%);
+            top: 0;
+            color: #3b82f6;
+        }
+    </style>
 </head>
-<body class="bg-slate-50">
+<body class="bg-slate-50 lg:h-screen">
 <div id="spinner" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-white bg-opacity-75">
     <div class="fas fa-circle-notch fa-spin fa-5x text-indigo-600"></div>
 </div>
-</div>
-<div class="mx-auto max-w-screen-xl px-4 py-24 sm:px-6 lg:px-8">
-    <div class="mx-auto max-w-5xl"> <!-- Further increased max-width of the container -->
+<main class="mx-auto max-w-screen-xl px-4 py-16 sm:px-6 lg:px-8">
+    <section class="mx-auto max-w-5xl">
         <h1 class="text-center text-2xl font-bold text-indigo-600 sm:text-3xl">Resume-Job Matcher</h1>
-
         <p class="mx-auto mt-4 max-w-xl text-center text-gray-500"> <!-- Increased max-width of the paragraph -->
             Tailor your resume to the job you're applying for by highlighting skills and experiences that are most
             relevant to the position.
         </p>
         <div id="container" class="bg-white mb-0 mt-6 space-y-6 rounded-lg p-6 shadow-lg sm:p-8 lg:p-10">
             <form id="form" action="/refine" method="post" enctype="multipart/form-data" class="">
-                <!-- Increased padding and spacing -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6"> <!-- Increased grid gap -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <!-- Resume Textarea -->
-                        <label for="resume_text" class="sr-only">Resume</label>
+                        <div class="relative pt-2">
                         <textarea id="resume" name="resume_text" rows="20"
                                   class="w-full rounded-lg border-gray-200 border p-4 text-sm shadow-sm"
-                                  placeholder="Paste your resume here"></textarea>
+                                  placeholder=""></textarea>
+                            <label for="resume_text"
+                                   class="text-sm text-gray-400 absolute left-4 top-6 transition-all pointer-events-none">Paste
+                                your resume here</label>
+                        </div>
                         <!-- Drag and Drop File Upload for Resume -->
                         <div id="drop_area_resume"
                              class="flex flex-col items-center justify-center p-4 border-2 border-gray-300 border-dashed rounded-lg my-4 hover:border-gray-400"
@@ -44,10 +56,14 @@
                     </div>
                     <div>
                         <!-- Job Description Textarea -->
-                        <label for="job_description_text" class="sr-only">Job Description</label>
+                        <div class="relative pt-2">
                         <textarea id="job_description" name="job_description_text" rows="20"
                                   class="w-full rounded-lg border-gray-200 border p-4 text-sm shadow-sm"
-                                  placeholder="Paste job description here"></textarea>
+                                  placeholder=""></textarea>
+                            <label for="job_description_text"
+                                   class="text-sm text-gray-400 absolute left-4 top-6 transition-all pointer-events-none">Paste
+                                job description here</label>
+                        </div>
                         <!-- Drag and Drop File Upload for Job Description -->
                         <div id="drop_area_job_description"
                              class="flex flex-col items-center justify-center p-4 border-2 border-gray-300 border-dashed rounded-lg my-4 hover:border-gray-400"
@@ -77,8 +93,15 @@
                 </a>
             </div>
         </div>
-    </div>
-</div>
+        <div id="alert_bar" class="hidden mt-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
+             role="alert">
+            <strong class="font-bold">Attention!</strong>
+            <span id="error_message" class="block sm:inline"></span>
+            <button id="alert_bar button" class="absolute top-0 bottom-0 right-0 px-4 py-3"><i class="fas fa-times"></i>
+            </button>
+        </div>
+    </section>
+</main>
 <script>
     const form = document.querySelector('form');
     const dropAreaResume = document.getElementById('drop_area_resume');
@@ -87,6 +110,15 @@
     const fileInputJobDescription = document.getElementById('job_description_file');
     const resumeTextArea = document.getElementById('resume');
     const jobDescriptionTextArea = document.getElementById('job_description');
+    const errorMessage = document.getElementById('error_message');
+    const alertBar = document.getElementById('alert_bar');
+    const closeButton = document.getElementById('alert_bar button');
+
+    document.addEventListener('DOMContentLoaded', function () {
+        closeButton.addEventListener('click', function () {
+            alertBar.classList.add('hidden');
+        });
+    });
 
     dropAreaResume.addEventListener('click', () => fileInputResume.click());
     dropAreaJobDescription.addEventListener('click', () => fileInputJobDescription.click());
@@ -133,9 +165,10 @@
     }
 
     function sendForm() {
+        hideError();
         const spinner = document.getElementById('spinner');
 
-        // Show spinner
+        // Show loading state
         spinner.classList.remove('hidden');
 
         const formData = new FormData();
@@ -154,16 +187,29 @@
         })
             .then(response => response.json())
             .then(data => {
-                console.log('Success:', data);
-                updateSuggestions(data.refined);
+                if (data.error) {
+                    showError(data.error);
+                } else {
+                    updateSuggestions(data.refined);
+                }
             })
             .catch((error) => {
                 console.error('Error:', error);
             })
             .finally(() => {
-                // Hide spinner
+                // Hide loading state
                 spinner.classList.add('hidden');
             });
+    }
+
+    function showError(message) {
+        errorMessage.innerText = message;
+        alertBar.classList.remove('hidden');
+    }
+
+    function hideError() {
+        errorMessage.innerText = "";
+        alertBar.classList.add('hidden');
     }
 
     function updateSuggestions(refined) {
