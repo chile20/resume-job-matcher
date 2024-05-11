@@ -1,6 +1,10 @@
 from app import create_app
+import os
+from dotenv import load_dotenv
 
+load_dotenv()
 app = create_app()
+app.secret_key = os.environ.get('SECRET_KEY')
 
 # Handling missing CSS
 @app.route('/styles.css')
