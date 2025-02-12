@@ -9,7 +9,7 @@ load_dotenv()
 
 main = Blueprint('main', __name__)
 
-PASSWORD = os.environ.get('PASSWORD')
+# PASSWORD = os.environ.get('PASSWORD')
 
 # @main.route('/login', methods=['GET', 'POST'])
 # def login():

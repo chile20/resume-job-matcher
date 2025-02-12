@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 app = create_app()
-app.secret_key = os.environ.get('SECRET_KEY')
+# app.secret_key = os.environ.get('SECRET_KEY')
 
 # Handling missing CSS
 @app.route('/styles.css')
