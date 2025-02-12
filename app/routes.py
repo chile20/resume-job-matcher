@@ -11,20 +11,20 @@ main = Blueprint('main', __name__)
 
 PASSWORD = os.environ.get('PASSWORD')
 
-@main.route('/login', methods=['GET', 'POST'])
-def login():
-    if request.method == 'POST':
-        if request.form['password'] == PASSWORD:
-            session['logged_in'] = True
-            return redirect(url_for('main.home'))
-        else:
-            return 'Invalid Password', 401
-    return render_template('login.html')
+# @main.route('/login', methods=['GET', 'POST'])
+# def login():
+#     if request.method == 'POST':
+#         if request.form['password'] == PASSWORD:
+#             session['logged_in'] = True
+#             return redirect(url_for('main.home'))
+#         else:
+#             return 'Invalid Password', 401
+#     return render_template('login.html')
 
 @main.route('/')
 def home():
-    if not session.get('logged_in'):
-        return redirect(url_for('main.login'))
+    # if not session.get('logged_in'):
+    #     return redirect(url_for('main.login'))
     return render_template('home.html')
 
 @main.route('/refine', methods=['POST'])
